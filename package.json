@@ -1,0 +1,23 @@
+{
+  "name": "webjumptest",
+  "version": "1.0.0",
+  "description": "Teste técnico de aplicação Node.js.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start:dev": "nodemon app.js"
+  },
+  "keywords": [
+    "Webjump",
+    "Node.js",
+    "SOLID"
+  ],
+  "author": "caiocltm",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^2.0.2"
+  },
+  "dependencies": {
+    "winston": "^3.2.1"
+  }
+}
