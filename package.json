@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start:dev": "nodemon app.js"
+    "start": "nodemon app.js"
   },
   "keywords": [
     "Webjump",
@@ -18,6 +18,7 @@
     "nodemon": "^2.0.2"
   },
   "dependencies": {
+    "mongoose": "^5.9.2",
     "winston": "^3.2.1"
   }
 }
