@@ -41,12 +41,23 @@ exports.fetchProducts = async (response) => {
 
 exports.addProduct = async (response, payload) => {
 	try {
+		let validateSKU = await Product.findOne({ sku: payload.sku });
+		if(validateSKU) {
+			return response
+			.writeHead(201, { 'Content-Type' : 'application/json' })
+			.end(
+				JSON.stringify({ 
+					message: `[addProduct] Product SKU ${payload.sku} already registered, please inform a valid SKU.`,
+					product: false
+				})
+			);
+		}
 		const product = new Product({
 			nome: payload.nome,
 			sku: payload.sku,
-			preco: parseFloat(payload.preco),
+			preco: payload.preco,
 			descricao: payload.descricao,
-			quantidade: parseFloat(payload.quantidade),
+			quantidade: payload.quantidade,
 			categoria: payload.categoria
 		});
 		const result = await product.save();
@@ -57,15 +68,6 @@ exports.addProduct = async (response, payload) => {
 				JSON.stringify({ 
 					message: "[addProduct] Success",
 					product: result
-				})
-			);
-		} else {
-			response
-			.writeHead(500, { 'Content-Type' : 'application/json' })
-			.end(
-				JSON.stringify({ 
-					message: "[addProduct] Error",
-					error: result
 				})
 			);
 		}
@@ -85,9 +87,20 @@ exports.addProduct = async (response, payload) => {
 	}
 };
 
-exports.updateProduct = async (response, { _id }) => {
+exports.updateProduct = async (response, payload) => {
 	try {
-		const result = await Product.updateOne({ _id }, payload);
+		let validateSKU = await Product.findOne({ sku: payload.sku });
+		if(!validateSKU) {
+			return response
+			.writeHead(200, {'Content-Type': 'application/json'})
+			.end(
+				JSON.stringify({ 
+					message: `[updateProduct] Product SKU ${payload.sku} not found, please inform a valid SKU code.`,
+					product: false
+				})
+			);
+		}
+		const result = await Product.findOneAndUpdate({ sku: payload.sku }, payload);
 		if(result) {
 			response
 			.writeHead(200, {'Content-Type': 'application/json'})
@@ -95,15 +108,6 @@ exports.updateProduct = async (response, { _id }) => {
 				JSON.stringify({ 
 					message: "[updateProduct] Success",
 					product: result
-				})
-			);
-		} else {
-			response
-			.writeHead(500, { 'Content-Type' : 'application/json' })
-			.end(
-				JSON.stringify({ 
-					message: "[updateProduct] Error",
-					error: result
 				})
 			);
 		}
@@ -123,9 +127,20 @@ exports.updateProduct = async (response, { _id }) => {
 	}
 };
 
-exports.deleteProduct = async (response, { _id }) => {
+exports.deleteProduct = async (response, payload) => {
 	try {
-		const result = await Product.deleteOne({ _id });
+		let validateSKU = await Product.findOne({ sku: payload.sku });
+		if(!validateSKU) {
+			return response
+			.writeHead(200, {'Content-Type': 'application/json'})
+			.end(
+				JSON.stringify({ 
+					message: `[updateProduct] Product SKU ${payload.sku} not found, please inform a valid SKU code.`,
+					product: false
+				})
+			);
+		}
+		const result = await Product.findOneAndDelete({ sku: payload.sku });
 		if(result) {
 			response
 			.writeHead(200, { 'Content-Type' : 'application/json' })
@@ -133,15 +148,6 @@ exports.deleteProduct = async (response, { _id }) => {
 				JSON.stringify({ 
 					message: "[deleteProduct] Success",
 					product: true
-				})
-			);
-		} else {
-			response
-			.writeHead(500, { 'Content-Type' : 'application/json' })
-			.end(
-				JSON.stringify({ 
-					message: "[deleteProduct] Error",
-					error: result
 				})
 			);
 		}

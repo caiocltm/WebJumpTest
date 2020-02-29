@@ -21,10 +21,12 @@ const ProductSchema = new Schema({
 		type: String,
 		required: true
 	},
-	categoria: {
-		type: Schema.Types.ObjectId,
-		ref: 'Category'
-	}
+	categoria:[
+		{
+			type: Schema.Types.ObjectId,
+			ref: 'Category'
+		}
+	]
 }, 
 	{ timestamps: true }
 );
