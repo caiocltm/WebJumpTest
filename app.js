@@ -1,24 +1,28 @@
 const http = require('http');
-const fs = require('fs');
-const path = require('path');
 
+// Setting env globally.
+global.ENV = require('./.env');
+
+// Logger
 const log = require('./logs/logger');
+
+// Helpers
 const database = require('./database/database');
 const parser = require('./helpers/bodyParser.helper');
 
-const categoryController = require('./controllers/category');
-const productController = require('./controllers/product');
+// Routes
+const staticRoutes = require('./routes/static.routes');
+const categoryRoutes = require('./routes/category.routes');
+const productRoutes = require('./routes/product.routes');
 
-const HOSTNAME = '127.0.0.1';
-const PORT = 3000;
-const DATABASE_URL = 'mongodb://localhost:27017';
-const DATABASE_NAME = 'webjump';
-
+// HTTP Server Instance.
 const server = http.createServer();
 
-database.connect(`${DATABASE_URL}/${DATABASE_NAME}`)
+database.connect(`${ENV.DATABASE_URL}/${ENV.DATABASE_NAME}`)
 .then(_ => {
-	console.log(`Connected with the MongoDB database: ${DATABASE_URL}/${DATABASE_NAME}.`);
+
+	console.log(`Connected with the MongoDB database: ${ENV.DATABASE_URL}/${ENV.DATABASE_NAME}.`);
+	
 	server
 		.on('request', (req, res) => {
 
@@ -48,8 +52,8 @@ database.connect(`${DATABASE_URL}/${DATABASE_NAME}`)
 				}
 			}));
 
-			const RAW_URL = req.url.toString().trim();
-			const CONVERTED_URL = RAW_URL.split('.').length === 1 ? RAW_URL : RAW_URL.split('.')[1];
+			const URL = req.url.toString().trim();
+			const ROUTE = URL.split('.').length === 1 ? URL : URL.split('.')[1];
 
 			const METHODS = {
 
@@ -57,160 +61,89 @@ database.connect(`${DATABASE_URL}/${DATABASE_NAME}`)
 
 					const GET_ROUTES = {
 
-						'/': _ => {
-							res.writeHead(200, {'Content-Type': 'text/html'}); 					
-							fs.createReadStream(path.join(__dirname, 'assets/templates/dashboard.html'), { encoding: 'utf8' })
-							.pipe(res);
-						},
+						'/': _ => staticRoutes.serve({ res: res, route: ROUTE }),
 
-						'/dashboard': _ => {
-							res.writeHead(200, {'Content-Type': 'text/html'}); 					
-							fs.createReadStream(path.join(__dirname, `assets/templates/${CONVERTED_URL}.html`), { encoding: 'utf8' })
-							.pipe(res);
-						},
+						'/dashboard': _ => staticRoutes.serve({ res: res, route: ROUTE }),
 
-						'/categories': _ => {
-							res.writeHead(200, {'Content-Type': 'text/html'}); 					
-							fs.createReadStream(path.join(__dirname, `assets/templates/category/${CONVERTED_URL}.html`), { encoding: 'utf8' })
-							.pipe(res);
-						},
+						'/categories': _ => staticRoutes.serve({ res: res, route: ROUTE, file: URL }),
 
-						'/addCategory': _ => {
-							res.writeHead(200, {'Content-Type': 'text/html'}); 					
-							fs.createReadStream(path.join(__dirname, `assets/templates/category/${CONVERTED_URL}.html`), { encoding: 'utf8' })
-							.pipe(res);
-						},
+						'/addCategory': _ => staticRoutes.serve({ res: res, route: ROUTE, file: URL }),
 
-						'/editCategory': _ => {
-							res.writeHead(200, {'Content-Type': 'text/html'}); 					
-							fs.createReadStream(path.join(__dirname, `assets/templates/category/${CONVERTED_URL}.html`), { encoding: 'utf8' })
-							.pipe(res);
-						},
+						'/editCategory': _ => staticRoutes.serve({ res: res, route: ROUTE, file: URL }),
 
-						'/deleteCategory': _ => {
-							res.writeHead(200, {'Content-Type': 'text/html'}); 					
-							fs.createReadStream(path.join(__dirname, `assets/templates/category/${CONVERTED_URL}.html`), { encoding: 'utf8' })
-							.pipe(res);
-						},
+						'/deleteCategory': _ => staticRoutes.serve({ res: res, route: ROUTE, file: URL }),
 
-						'/categories/fetch': _ => categoryController.fetchCategories(res),
+						'/categories/fetch': _ => categoryRoutes.get({ res: res, route: ROUTE }),
 
-						'/products': _ => { 
-							res.writeHead(200, {'Content-Type': 'text/html'}); 					
-							fs.createReadStream(path.join(__dirname, `assets/templates/product/${CONVERTED_URL}.html`), { encoding: 'utf8' })
-							.pipe(res);
-						},
+						'/products': _ => staticRoutes.serve({ res: res, route: ROUTE, file: URL }),
 
-						'/products/fetch': _ => productController.fetchProducts(res),
+						'/products/fetch': _ => productRoutes.get({ res: res, route: ROUTE }),
 
-						'/addProduct': _ => {
-							res.writeHead(200, {'Content-Type': 'text/html'}); 					
-							fs.createReadStream(path.join(__dirname, `assets/templates/product/${CONVERTED_URL}.html`), { encoding: 'utf8' })
-							.pipe(res);
-						},
+						'/addProduct': _ => staticRoutes.serve({ res: res, route: ROUTE, file: URL }),
 
-						'/editProduct': _ => {
-							res.writeHead(200, {'Content-Type': 'text/html'}); 					
-							fs.createReadStream(path.join(__dirname, `assets/templates/product/${CONVERTED_URL}.html`), { encoding: 'utf8' })
-							.pipe(res);
-						},
+						'/editProduct': _ => staticRoutes.serve({ res: res, route: ROUTE, file: URL }),
 
-						'/deleteProduct': _ => {
-							res.writeHead(200, {'Content-Type': 'text/html'}); 					
-							fs.createReadStream(path.join(__dirname, `assets/templates/product/${CONVERTED_URL}.html`), { encoding: 'utf8' })
-							.pipe(res);
-						},
+						'/deleteProduct': _ => staticRoutes.serve({ res: res, route: ROUTE, file: URL }),
 
-						'css': _ => {
-							res.writeHead(200, {"Content-Type": "text/css"});
-							fs.createReadStream(path.join(__dirname, 'assets', RAW_URL), { encoding: 'utf8' })
-							.pipe(res);
-						},
+						'css': _ => staticRoutes.serve({ res: res, route: ROUTE, file: URL }),
 
-						'png': _ => {
-							res.writeHead(200, {"Content-Type": "image/png"});
-							fs.createReadStream(path.join(__dirname, 'assets', RAW_URL))
-							.pipe(res);
-						},
+						'png': _ => staticRoutes.serve({ res: res, route: ROUTE, file: URL }),
 
-						'js': _ => {
-							res.writeHead(200, {"Content-Type": "text/javascript"});
-							fs.createReadStream(path.join(__dirname, 'assets', RAW_URL), { encoding: 'utf8' })
-							.pipe(res);
-						},
+						'js': _ => staticRoutes.serve({ res: res, route: ROUTE, file: URL }),
 
-						'404': _ => {
-							res.writeHead(404, {'Content-Type': 'text/html'});
-							fs.createReadStream(`./assets/templates/404.html`, { encoding: 'utf8' }).pipe(res);
-						}
+						'404': _ => staticRoutes.serve({ res: res, route: '404' }),
 
 					};
-					GET_ROUTES[CONVERTED_URL] ? GET_ROUTES[CONVERTED_URL]() : GET_ROUTES['404']();
+					GET_ROUTES[ROUTE] ? GET_ROUTES[ROUTE]() : GET_ROUTES['404']();
 				},
 
 				POST: _ => {
 
 					const POST_ROUTES = {
 
-						'/category/add': _ => parser.body(req, (body) => categoryController.addCategory(res, body)),
+						'/category/add': _ => parser.body(req, (body) => categoryRoutes.post({ res: res, route: ROUTE, payload: body })),
 
-						'/product/add': _ => parser.formData(req, (body) => productController.addProduct(res, body)),
+						'/product/add': _ => parser.formData(req, (body) => productRoutes.post({ res: res, route: ROUTE, payload: body })),
 
-						'404': _ => {
-							res
-							.writeHead(404, { 'Content-Type' : 'application/json' })
-							.end(
-								JSON.stringify(
-									{ message: 'URL Not Found' }
-								)
-							);
-						}
+						'404': _ => staticRoutes.serve({ res: res, route: '404' })
 
 					};
-					POST_ROUTES[CONVERTED_URL] ? POST_ROUTES[CONVERTED_URL]() : POST_ROUTES['404']();
+					POST_ROUTES[ROUTE] ? POST_ROUTES[ROUTE]() : POST_ROUTES['404']();
 				},
 
 				PUT: _ => {
 					
 					const PUT_ROUTES = {
 
-						'/category/update': _ => parser.body(req, (body) => categoryController.updateCategory(res, body)),
+						'/category/update': _ => parser.body(req, (body) => categoryRoutes.put({ res: res, route: ROUTE, payload: body })),
 						
-						'/product/update': _ => parser.body(req, (body) => productController.updateProduct(res, body)),
+						'/product/update': _ => parser.formData(req, (body) => productRoutes.put({ res: res, route: ROUTE, payload: body })),
 
-						'404': _ => {
-							res
-							.writeHead(404, { 'Content-Type' : 'application/json' })
-							.end(
-								JSON.stringify(
-									{ message: 'URL Not Found' }
-								)
-							);
-						}
+						'404': _ => staticRoutes.serve({ res: res, route: '404' })
 
 					};
-					PUT_ROUTES[CONVERTED_URL] ? PUT_ROUTES[CONVERTED_URL]() : PUT_ROUTES['404']();
+					PUT_ROUTES[ROUTE] ? PUT_ROUTES[ROUTE]() : PUT_ROUTES['404']();
 				},
 
 				DELETE: _ => {
 					const DELETE_ROUTES = {
 
-						'/category/delete': _ => parser.body(req, (body) => categoryController.deleteCategory(res, body)),
+						'/category/delete': _ => parser.body(req, (body) => categoryRoutes.delete({ res: res, route: ROUTE, payload: body })),
 
-						'/product/delete': _ => parser.body(req, (body) => productController.deleteProduct(res, body)),
+						'/product/delete': _ => parser.body(req, (body) => productRoutes.delete({ res: res, route: ROUTE, payload: body })),
 
-						'404': _ => {
-							res
-							.writeHead(404, { 'Content-Type' : 'application/json' })
-							.end(
-								JSON.stringify(
-									{ message: 'URL Not Found' }
-								)
-							);
-						}
+						'404': _ => staticRoutes.serve({ res: res, route: '404' })
 
 					};
-					DELETE_ROUTES[CONVERTED_URL] ? DELETE_ROUTES[CONVERTED_URL]() : DELETE_ROUTES['404']();
+					DELETE_ROUTES[ROUTE] ? DELETE_ROUTES[ROUTE]() : DELETE_ROUTES['404']();
+				},
+
+				OPTIONS: _ => {
+					res.setHeader('Access-Control-Allow-Origin', '*');
+					res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+					res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+					res.setHeader('Access-Control-Allow-Credentials', true);
+					res.end();
 				}
 				
 			}[req.method]();
@@ -231,12 +164,12 @@ database.connect(`${DATABASE_URL}/${DATABASE_NAME}`)
 			}
 		}))
 
-		.listen(PORT, HOSTNAME, _ => console.log(`Server running at http://${HOSTNAME}:${PORT}/`));
+		.listen(ENV.SERVER_PORT, ENV.SERVER_HOSTNAME, _ => console.log(`Server running at http://${ENV.SERVER_HOSTNAME}:${ENV.SERVER_PORT}/`));
 })
 .catch(error => log.error({
 	level: 'error',
 	message: {
-		type: 'Request Error',
+		type: 'Database Connection Error',
 		method: req.method,
 		url: req.url,
 		error: error

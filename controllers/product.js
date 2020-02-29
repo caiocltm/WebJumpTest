@@ -1,5 +1,7 @@
 const Product = require('../database/models/product.model');
 const log = require('../logs/logger');
+const fs = require('fs');
+const path = require('path');
 
 exports.fetchProducts = async (response) => {
 	try {
@@ -130,8 +132,8 @@ exports.updateProduct = async (response, payload) => {
 
 exports.deleteProduct = async (response, payload) => {
 	try {
-		let validateSKU = await Product.findOne({ sku: payload.sku });
-		if(!validateSKU) {
+		let validateProduct = await Product.findOne({ sku: payload.sku });
+		if(!validateProduct) {
 			return response
 			.writeHead(200, {'Content-Type': 'application/json'})
 			.end(
@@ -141,6 +143,10 @@ exports.deleteProduct = async (response, payload) => {
 				})
 			);
 		}
+
+		const pathToDelete = path.join(__dirname, '../assets', validateProduct.image);
+		fs.existsSync(pathToDelete) && fs.unlinkSync(pathToDelete);
+
 		const result = await Product.findOneAndDelete({ sku: payload.sku });
 		if(result) {
 			response

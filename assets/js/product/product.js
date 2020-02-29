@@ -76,9 +76,9 @@ document.addEventListener('DOMContentLoaded', () => {
       categorias.length > 1 ? 
       categorias.map((categoria, index) => {
         if(index < categorias.length - 1) span.innerHTML += categoria.nome + ' | ';
-        else span.innerHTML += categoria.nome
+        else span.innerHTML += categoria.nome;
       }) : 
-      span.innerHTML += categorias[0];
+      span.innerHTML += categorias[0].nome;
   
       td.append(span);
       tr.append(td);
