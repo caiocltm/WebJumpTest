@@ -41,7 +41,17 @@ exports.fetchCategories = async (response) => {
 
 exports.addCategory = async (response, payload) => {
 	try {
-		console.log(payload);
+		let codeExists = await Category.find({ codigo: payload.codigo });
+		if(codeExists) {
+			return response
+			.writeHead(201, { 'Content-Type' : 'application/json' })
+			.end(
+				JSON.stringify({ 
+					message: `[addCategory] Category code ${payload.codigo} already exists.`,
+					category: false
+				})
+			);
+		}
 		const category = new Category({
 			nome: payload.nome,
 			codigo: payload.codigo
@@ -54,15 +64,6 @@ exports.addCategory = async (response, payload) => {
 				JSON.stringify({ 
 					message: "[addCategory] Success",
 					category: result
-				})
-			);
-		} else {
-			response
-			.writeHead(500, { 'Content-Type' : 'application/json' })
-			.end(
-				JSON.stringify({ 
-					message: "[addCategory] Error",
-					error: result
 				})
 			);
 		}
@@ -84,7 +85,7 @@ exports.addCategory = async (response, payload) => {
 
 exports.updateCategory = async (response, payload) => {
 	try {
-		const result = await Category.updateOne({ _id: payload._id }, payload);
+		const result = await Category.findOneAndUpdate({ codigo: payload.codigo }, payload);
 		if(result) {
 			response
 			.writeHead(200, { 'Content-Type' : 'application/json' })
@@ -99,8 +100,8 @@ exports.updateCategory = async (response, payload) => {
 			.writeHead(500, { 'Content-Type' : 'application/json' })
 			.end(
 				JSON.stringify({ 
-					message: "[updateCategory] Error",
-					error: result
+					message: `[updateCategory] Category code ${payload.codigo} not found, please inform a valid code.`,
+					category: false
 				})
 			);
 		}
@@ -122,7 +123,7 @@ exports.updateCategory = async (response, payload) => {
 
 exports.deleteCategory = async (response, payload) => {
 	try {
-		const result = await Category.findOneAndDelete({ _id: payload._id });
+		const result = await Category.findOneAndDelete({ codigo: payload.codigo });
 		if(result) {
 			response.writeHead(200, {'Content-Type': 'application/json'})
 			.end(
@@ -135,8 +136,8 @@ exports.deleteCategory = async (response, payload) => {
 			response.writeHead(500, {'Content-Type': 'application/json'})
 			.end(
                 JSON.stringify({ 
-			    	message: "[deleteCategory] Error",
-                    error: result
+			    	message: `[deleteCategory] Category code ${payload.codigo} not found, please inform a valid code.`,
+                    category: false
                 })
             );
 		}
