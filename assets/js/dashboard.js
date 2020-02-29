@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 		setNomeToDOM(product.nome);
 		setPrecoToDOM(product.preco);
-		setQuantidadeToDOM(products.length);
+		setQuantidadeToDOM(products.length, product.quantidade);
 		setImageToDOM(product.image);
 
 		li.append(divProduct);
@@ -52,11 +52,11 @@ document.addEventListener('DOMContentLoaded', () => {
 		divProduct.append(divProductPrice);
 	  }
 
-	  function setQuantidadeToDOM(quantidade) {
+	  function setQuantidadeToDOM(quantidadeTotal, quantidadeProduto) {
 		const span = document.createElement("span");
 		span.setAttribute('class', 'special-price');
-		span.innerHTML = ` ${quantidade} available`;
-		infor.innerHTML = `You have ${quantidade} products added on this store: 
+		span.innerHTML = ` ${quantidadeProduto} available`;
+		infor.innerHTML = `You have ${quantidadeTotal} products added on this store: 
 							<a href="/addProduct" class="btn-action">Add new Product</a>`;
 		divProductPrice.append(span);
 		divProduct.append(divProductPrice);
