@@ -41,7 +41,7 @@ exports.fetchCategories = async (response) => {
 
 exports.addCategory = async (response, payload) => {
 	try {
-		let codeExists = await Category.find({ codigo: payload.codigo });
+		let codeExists = await Category.findOne({ codigo: payload.codigo });
 		if(codeExists) {
 			return response
 			.writeHead(201, { 'Content-Type' : 'application/json' })
