@@ -18,10 +18,10 @@ exports.formData = (req, callback) => {
 	form.parse(req, (err, fields, files) => {
 		if(err) throw new Error(err);
 		let oldpath = files.image.path; // Temporary directory.
-		let newpath = path.join(__dirname, '../assets/images/', files.image.name); // Permament directory.
+		let newpath = path.join(__dirname, '../assets/images/product', files.image.name); // Permament directory.
 		fs.rename(oldpath, newpath, (err) => {
 			if (err) throw new Error(err);
-			fields.image = './images/product/' + files.image.name;
+			fields.image = '/images/product/' + files.image.name;
 			callback(fields);
 		});
 	});
