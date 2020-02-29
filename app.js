@@ -4,6 +4,7 @@ const path = require('path');
 
 const log = require('./logs/logger');
 const database = require('./database/database');
+const parser = require('./helpers/bodyParser.helper');
 
 const categoryController = require('./controllers/category');
 const productController = require('./controllers/product');
@@ -20,6 +21,11 @@ database.connect(`${DATABASE_URL}/${DATABASE_NAME}`)
 	console.log(`Connected with the MongoDB database: ${DATABASE_URL}/${DATABASE_NAME}.`);
 	server
 		.on('request', (req, res) => {
+
+			res.setHeader('Access-Control-Allow-Origin', '*');
+			res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+			res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+			res.setHeader('Access-Control-Allow-Credentials', true);
 
 			log.info({
 				level: 'info',
@@ -53,51 +59,65 @@ database.connect(`${DATABASE_URL}/${DATABASE_NAME}`)
 
 						'/': _ => {
 							res.writeHead(200, {'Content-Type': 'text/html'}); 					
-							fs.createReadStream(path.join(__dirname, 'assets/dashboard.html'), { encoding: 'utf8' })
+							fs.createReadStream(path.join(__dirname, 'assets/templates/dashboard.html'), { encoding: 'utf8' })
 							.pipe(res);
 						},
 
 						'/dashboard': _ => {
 							res.writeHead(200, {'Content-Type': 'text/html'}); 					
-							fs.createReadStream(path.join(__dirname, `assets/${CONVERTED_URL}.html`), { encoding: 'utf8' })
+							fs.createReadStream(path.join(__dirname, `assets/templates/${CONVERTED_URL}.html`), { encoding: 'utf8' })
 							.pipe(res);
 						},
 
 						'/categories': _ => {
 							res.writeHead(200, {'Content-Type': 'text/html'}); 					
-							fs.createReadStream(path.join(__dirname, `assets/${CONVERTED_URL}.html`), { encoding: 'utf8' })
+							fs.createReadStream(path.join(__dirname, `assets/templates/category/${CONVERTED_URL}.html`), { encoding: 'utf8' })
 							.pipe(res);
 						},
 
-						'/categories/fetch': _ => {
-							let data = [];
-							req
-							.on('data', (chunk) => data.push(chunk))
-							.on('end', _ => categoryController.fetchCategories(res));
+						'/addCategory': _ => {
+							res.writeHead(200, {'Content-Type': 'text/html'}); 					
+							fs.createReadStream(path.join(__dirname, `assets/templates/category/${CONVERTED_URL}.html`), { encoding: 'utf8' })
+							.pipe(res);
 						},
+
+						'/editCategory': _ => {
+							res.writeHead(200, {'Content-Type': 'text/html'}); 					
+							fs.createReadStream(path.join(__dirname, `assets/templates/category/${CONVERTED_URL}.html`), { encoding: 'utf8' })
+							.pipe(res);
+						},
+
+						'/deleteCategory': _ => {
+							res.writeHead(200, {'Content-Type': 'text/html'}); 					
+							fs.createReadStream(path.join(__dirname, `assets/templates/category/${CONVERTED_URL}.html`), { encoding: 'utf8' })
+							.pipe(res);
+						},
+
+						'/categories/fetch': _ => categoryController.fetchCategories(res),
 
 						'/products': _ => { 
 							res.writeHead(200, {'Content-Type': 'text/html'}); 					
-							fs.createReadStream(path.join(__dirname, `assets/${CONVERTED_URL}.html`), { encoding: 'utf8' })
+							fs.createReadStream(path.join(__dirname, `assets/templates/product/${CONVERTED_URL}.html`), { encoding: 'utf8' })
 							.pipe(res);
 						},
 
-						'/products/fetch': _ => {
-							let data = [];
-							req
-							.on('data', (chunk) => data.push(chunk))
-							.on('end', _ => productController.fetchProducts(res));
-						},
+						'/products/fetch': _ => productController.fetchProducts(res),
 
 						'/addProduct': _ => {
 							res.writeHead(200, {'Content-Type': 'text/html'}); 					
-							fs.createReadStream(path.join(__dirname, `assets/${CONVERTED_URL}.html`), { encoding: 'utf8' })
+							fs.createReadStream(path.join(__dirname, `assets/templates/product/${CONVERTED_URL}.html`), { encoding: 'utf8' })
 							.pipe(res);
 						},
 
-						'/addCategory': _ => { 
+						'/editProduct': _ => {
 							res.writeHead(200, {'Content-Type': 'text/html'}); 					
-							fs.createReadStream(path.join(__dirname, `assets/${CONVERTED_URL}.html`), { encoding: 'utf8' })
+							fs.createReadStream(path.join(__dirname, `assets/templates/product/${CONVERTED_URL}.html`), { encoding: 'utf8' })
+							.pipe(res);
+						},
+
+						'/deleteProduct': _ => {
+							res.writeHead(200, {'Content-Type': 'text/html'}); 					
+							fs.createReadStream(path.join(__dirname, `assets/templates/product/${CONVERTED_URL}.html`), { encoding: 'utf8' })
 							.pipe(res);
 						},
 
@@ -121,7 +141,7 @@ database.connect(`${DATABASE_URL}/${DATABASE_NAME}`)
 
 						'404': _ => {
 							res.writeHead(404, {'Content-Type': 'text/html'});
-							fs.createReadStream(`./assets/404.html`, { encoding: 'utf8' }).pipe(res);
+							fs.createReadStream(`./assets/templates/404.html`, { encoding: 'utf8' }).pipe(res);
 						}
 
 					};
@@ -132,19 +152,9 @@ database.connect(`${DATABASE_URL}/${DATABASE_NAME}`)
 
 					const POST_ROUTES = {
 
-						'/category/add': _ => {
-							let data = [];
-							req
-							.on('data', (chunk) => data.push(chunk))
-							.on('end', _ => categoryController.addCategory(res, JSON.parse(data)));
-						},
+						'/category/add': _ => parser.body(req, (body) => categoryController.addCategory(res, body)),
 
-						'/product/add': _ => {
-							let data = [];
-							req
-							.on('data', (chunk) => data.push(chunk))
-							.on('end', _ => productController.addProduct(res, JSON.parse(data)));
-						},
+						'/product/add': _ => parser.body(req, (body) => productController.addProduct(res, body)),
 
 						'404': _ => {
 							res
@@ -164,20 +174,9 @@ database.connect(`${DATABASE_URL}/${DATABASE_NAME}`)
 					
 					const PUT_ROUTES = {
 
-						'/category/update': _ => {
-							let data = [];
-							req
-							.on('data', (chunk) => data.push(chunk))
-							.on('end', _ => categoryController.updateCategory(res, JSON.parse(data)));
-						},
-
+						'/category/update': _ => parser.body(req, (body) => categoryController.updateCategory(res, body)),
 						
-						'/product/update': _ => {
-							let data = [];
-							req
-							.on('data', (chunk) => data.push(chunk))
-							.on('end', _ => productController.updateProduct(res, JSON.parse(data)));
-						},
+						'/product/update': _ => parser.body(req, (body) => productController.updateProduct(res, body)),
 
 						'404': _ => {
 							res
@@ -196,19 +195,9 @@ database.connect(`${DATABASE_URL}/${DATABASE_NAME}`)
 				DELETE: _ => {
 					const DELETE_ROUTES = {
 
-						'/category/delete': _ => {
-							let data = [];
-							req
-							.on('data', (chunk) => data.push(chunk))
-							.on('end', _ => categoryController.deleteCategory(res, JSON.parse(data)));
-						},
+						'/category/delete': _ => parser.body(req, (body) => categoryController.deleteCategory(res, body)),
 
-						'/product/delete': _ => {
-							let data = [];
-							req
-							.on('data', (chunk) => data.push(chunk))
-							.on('end', _ => productController.deleteProduct(res, JSON.parse(data)));
-						},
+						'/product/delete': _ => parser.body(req, (body) => productController.deleteProduct(res, body)),
 
 						'404': _ => {
 							res
