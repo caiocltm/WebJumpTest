@@ -1,4 +1,4 @@
-const categoryController = require('../controllers/category');
+const categoryController = require('../controllers/category.controller');
 
 module.exports = new class CategoryRoutes {
 

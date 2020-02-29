@@ -1,4 +1,4 @@
-const productController = require('../controllers/product');
+const productController = require('../controllers/product.controller');
 
 module.exports = new class CategoryRoutes {
 
