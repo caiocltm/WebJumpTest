@@ -283,3 +283,9 @@ body {
         width: 144px;
       }
     }
+
+    #result-message {
+      text-align: center;
+      color: white;
+      font-size: 20px;
+    }
