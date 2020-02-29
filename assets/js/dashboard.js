@@ -1,16 +1,20 @@
 document.addEventListener('DOMContentLoaded', () => {
  
 	const productsList = document.getElementsByClassName('product-list')[0];
-
+	const infor = document.getElementsByClassName('infor')[0];
+	
 	function productsToDOM(products) {
   
 	  let li;
 	  let divProduct;
 	  let divProductName;
 	  let divProductPrice;
+	  let divProductImage;
 
 	  products.forEach(product => {
 		li = document.createElement("li");
+		divProduct = document.createElement("div");
+		divProduct.setAttribute('class', 'product-info');
 
 		divProductName = document.createElement("div");
 		divProductName.setAttribute('class', 'product-name');
@@ -18,11 +22,16 @@ document.addEventListener('DOMContentLoaded', () => {
 		divProductPrice = document.createElement("div");
 		divProductPrice.setAttribute('class', 'product-price');
 
-		divProduct = document.createElement("div");
-		divProduct.setAttribute('class', 'product-info');
+		divProductPrice = document.createElement("div");
+		divProductPrice.setAttribute('class', 'product-price');
+		
+		divProductImage = document.createElement("div");
+		divProductImage.setAttribute('class', 'product-image');
 
 		setNomeToDOM(product.nome);
 		setPrecoToDOM(product.preco);
+		setQuantidadeToDOM(products.length);
+		setImageToDOM(product.image);
 
 		li.append(divProduct);
 		productsList.appendChild(li);
@@ -42,7 +51,26 @@ document.addEventListener('DOMContentLoaded', () => {
 		divProductPrice.append(span);
 		divProduct.append(divProductPrice);
 	  }
-  
+
+	  function setQuantidadeToDOM(quantidade) {
+		const span = document.createElement("span");
+		span.setAttribute('class', 'special-price');
+		span.innerHTML = ` ${quantidade} available`;
+		infor.innerHTML = `You have ${quantidade} products added on this store: 
+							<a href="/addProduct" class="btn-action">Add new Product</a>`;
+		divProductPrice.append(span);
+		divProduct.append(divProductPrice);
+	  }
+
+	  function setImageToDOM(image) {
+		const imgProduct = document.createElement("img");
+		imgProduct.setAttribute('layout', 'responsive');
+		imgProduct.setAttribute('width', '164');
+		imgProduct.setAttribute('heigth', '145');
+		imgProduct.setAttribute('src', image);
+		divProductImage.append(imgProduct);
+		li.append(divProductImage);
+	  }
 	}
   
 	(() => {

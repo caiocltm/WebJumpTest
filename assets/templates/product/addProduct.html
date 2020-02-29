@@ -70,6 +70,12 @@
         <label for="description" class="label">Description</label>
         <textarea id="description" class="input-text"></textarea>
       </div>
+      <div class="input-field">
+        <label for="product-image" class="label">Product Image</label>
+        <button id="select-file-button" class="btn-action">Select a image</button>
+        <input id="product-image" type="file" style="visibility: hidden;"></input>
+        <img id="image-uploaded" src="#" alt="Product Image" style="display: none;"/>
+      </div>
       <div class="actions-form">
         <a href="/products" class="action back">Back</a>
         <input class="btn-submit btn-action" type="submit" value="Save Product" />

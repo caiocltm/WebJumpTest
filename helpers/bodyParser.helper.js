@@ -1,4 +1,6 @@
-const log = require('../logs/logger');
+const formidable = require('formidable');
+const fs = require('fs');
+const path = require('path');
 
 exports.body = (req, callback) => {
 	let body = [];
@@ -9,4 +11,18 @@ exports.body = (req, callback) => {
 		error
 	}))
 	.on('end', _ => callback(JSON.parse(body)));
+};
+
+exports.formData = (req, callback) => {
+	const form = new formidable.IncomingForm();
+	form.parse(req, (err, fields, files) => {
+		if(err) throw new Error(err);
+		let oldpath = files.image.path; // Temporary directory.
+		let newpath = path.join(__dirname, '../assets/images/', files.image.name); // Permament directory.
+		fs.rename(oldpath, newpath, (err) => {
+			if (err) throw new Error(err);
+			fields.image = './images/product/' + files.image.name;
+			callback(fields);
+		});
+	});
 };

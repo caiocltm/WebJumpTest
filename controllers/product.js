@@ -58,7 +58,8 @@ exports.addProduct = async (response, payload) => {
 			preco: payload.preco,
 			descricao: payload.descricao,
 			quantidade: payload.quantidade,
-			categoria: payload.categoria
+			categoria: [...payload.categoria.split(',')],
+			image: payload.image || ""
 		});
 		const result = await product.save();
 		if(result === product) {

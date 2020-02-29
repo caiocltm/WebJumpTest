@@ -18,6 +18,7 @@
     "nodemon": "^2.0.2"
   },
   "dependencies": {
+    "formidable": "^1.2.2",
     "mongoose": "^5.9.2",
     "winston": "^3.2.1"
   }

@@ -109,7 +109,7 @@ body {
       flex-wrap: wrap;
       -webkit-justify-content: space-between;
       -ms-flex-pack: justify;
-      justify-content: space-between;
+      justify-content: space-around;
     }
     .product-list li {
       margin-bottom: 14px;
@@ -186,6 +186,7 @@ body {
       padding: 15px 20px;
       font-size: 20px;
       text-decoration: none;
+      cursor: pointer;
     }
 
     .data-grid {
@@ -288,4 +289,14 @@ body {
       text-align: center;
       color: white;
       font-size: 20px;
+    }
+
+    #image-uploaded {
+      display: block;
+      margin: 15px auto;
+    }
+
+    .infor {
+      display: flex;
+      justify-content: space-between;
     }

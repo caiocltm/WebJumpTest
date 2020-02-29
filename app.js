@@ -154,7 +154,7 @@ database.connect(`${DATABASE_URL}/${DATABASE_NAME}`)
 
 						'/category/add': _ => parser.body(req, (body) => categoryController.addCategory(res, body)),
 
-						'/product/add': _ => parser.body(req, (body) => productController.addProduct(res, body)),
+						'/product/add': _ => parser.formData(req, (body) => productController.addProduct(res, body)),
 
 						'404': _ => {
 							res
