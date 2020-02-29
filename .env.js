@@ -8,4 +8,15 @@ module.exports = {
 
 	DATABASE_NAME: 'webjump',
 
+	LOG: {
+		INFO: {
+			DIR_NAME: 'logs/info',
+			FILE_NAME: 'webjump-info.log'
+		},
+		ERROR: {
+			DIR_NAME: 'logs/error',
+			FILE_NAME: 'webjump-error.log'
+		}
+	}
+
 };

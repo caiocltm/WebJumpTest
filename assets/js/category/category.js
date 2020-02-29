@@ -62,13 +62,12 @@ document.addEventListener('DOMContentLoaded', () => {
     lastParent.append(tr);
   }
 
-  function callApi() {    
+  (() => {    
     fetch('http://127.0.0.1:3000/categories/fetch', { method: 'GET' })
     .then(async (response) => {
         const { categories } = await response.json();
         categories.forEach((s) => setCategoryDOM(s.nome, s.codigo));
     });
-  }
-
-  callApi(); 
+  })();
+  
 });
