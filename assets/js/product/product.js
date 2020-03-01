@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if(index < categorias.length - 1) span.innerHTML += categoria.nome + ' | ';
         else span.innerHTML += categoria.nome;
       }) : 
-      span.innerHTML += categorias[0].nome;
+      span.innerHTML += categorias[0] ?  categorias[0].nome : '';
   
       td.append(span);
       tr.append(td);

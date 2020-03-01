@@ -1,0 +1,25 @@
+{
+  "name": "import-csv",
+  "version": "1.0.0",
+  "description": "CLI (Command Line Interface) to import .csv files into a set database.",
+  "main": "src/cli.js",
+  "preferGlobal": true,
+  "bin": "./src/cli.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/cli.js"
+  },
+  "keywords": [
+    "cli",
+    "import-csv"
+  ],
+  "author": "caiocltm",
+  "license": "MIT",
+  "dependencies": {
+    "inquirer": "^7.0.4",
+    "uuid": "^7.0.1"
+  }
+}
